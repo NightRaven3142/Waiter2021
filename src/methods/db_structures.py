@@ -5,7 +5,7 @@ class SQLDb:
 
     def connect(self):
         try:
-            self.__conn = sqlite3.connect("WAITER.db")
+            self.__conn = sqlite3.connect("../WAITER.db")
         except Exception as e:
             print(e)
 

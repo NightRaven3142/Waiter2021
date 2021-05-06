@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+             <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/home" class="brand-logo center">Waiter</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a class="btn-small waves-effect" href="/order">{{navbar_data.left}}</a></li>
+            </ul>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a class="btn-small waves-effect" href="/login">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect" href="/signup">{{navbar_data.right_b}}</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="light">Order</h1>
+    </div>
+
+</body>
+</html>
