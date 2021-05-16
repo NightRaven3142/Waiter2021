@@ -11,4 +11,3 @@ class navbar_data:
 
     def set_right_b(self, val):
         self.right_b = val
-

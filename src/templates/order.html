@@ -7,24 +7,91 @@
 
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <nav>
         <div class="nav-wrapper">
             <a href="/home" class="brand-logo center">Waiter</a>
             <ul id="nav-mobile" class="left hide-on-med-and-down">
-                <li><a class="btn-small waves-effect" href="/order">{{navbar_data.left}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
             </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class="btn-small waves-effect" href="/login">{{navbar_data.right_a}}</a></li>
-                <li><a class="btn-small waves-effect" href="/signup">{{navbar_data.right_b}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/login">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/signup">{{navbar_data.right_b}}</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="container">
-        <h1 class="light">Order</h1>
-    </div>
+<!--    <div class="container">-->
+<!--        <img src="{{ url_for('static', filename='main_background.jpg') }}">-->
+<!--    </div>-->
 
+    <main>
+        <div class="container">
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix">search</i>
+                            <input type="text" placeholder="Find Dishes" id="autocomplete-input" class="autocomplete amber-text">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col s3">
+                
+            </div>
+            <div class="col s9">
+            <div class="col s3 m3">
+                <div class="card sticky-action small">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator" src="static/images/flower.jpg">
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title activator grey-text text-darken-3">DISH NAME<i class="material-icons right">more_vert</i></span>
+                    </div>
+                    <div class="card-action">
+                        <a class="modal-trigger" href="#modal1">Order now</a>
+                    </div>
+                    <div class="card-reveal">
+                      <span class="card-title grey-text text-darken-4">Card Title<i class="material-icons right">close</i></span>
+                      <p>Here is some more information about this product that is only revealed once clicked on.</p>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        </div>
+
+        <div id="modal1" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>DISH NAME</h4>
+                <img src="static/images/flower.jpg" class="responsive-img">
+                <p>DISH DESCRIPTION</p>
+            </div>
+            <div class="modal-footer">
+                <a class="modal-close waves-effect waves-orange btn-flat">Order Now</a>
+                <a class="modal-close waves-effect waves-orange btn-flat">Save for Later</a>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+        <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+    <script type="text/javascript">
+          $(document).ready(function(){
+            $('.modal').modal();
+          });
+    </script>
 </body>
 </html>

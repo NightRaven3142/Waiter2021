@@ -18,7 +18,7 @@ def index():
 
     return redirect(url_for("home"))
 
-@app.route("/home")
+@app.route("/home", methods= ["GET", "POST"])
 def home():
     global nav_data
     return render_template("home.html", navbar_data=nav_data)
