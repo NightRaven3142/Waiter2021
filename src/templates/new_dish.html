@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+          <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
+      <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/home" class="brand-logo center">Waiter</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
+            </ul>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_a">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_b">{{navbar_data.right_b}}</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container" style="margin-top: 2em;">
+        <h4 class="light grey-text text-darken-3 center">Create a new dish</h4>
+
+         <div class = "row">
+         <form class = "col s12" method=post enctype=multipart/form-data>
+            <div class="row">
+                <div class="input-field col s9">
+                    <input id="dish_name" type="text" name="dish_name" class="validate" />
+                    <label for="dish_name">Dish Name</label>
+                </div>
+                <div class="input-field col s3">
+                    <input id="dish_price" type="text" name="dish_price" class="validate" />
+                    <label for="dish_price">Price</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="dish_description" type="text" name="dish_description" class="validate" />
+                    <label for="dish_description">Dish Description</label>
+                </div>
+            </div>
+
+             <div class="row">
+                <div class="input-field col s12">
+                    <input id="dish_cuisine" type="text" name="dish_cuisine" class="validate" />
+                    <label for="dish_cuisine">Dish Cuisine</label>
+                </div>
+            </div>
+
+
+
+            <div class = "row">
+               <div class = "file-field input-field">
+                  <div class = "btn waves-effect amber darken-2">
+                     <span>Browse</span>
+                     <input type="file" name="file" />
+                  </div>
+
+                  <div class = "file-path-wrapper">
+                     <input class = "file-path validate" type = "text"
+                        placeholder = "Upload file" />
+                  </div>
+
+                   <button type="submit" class="btn waves-effect amber darken-2">Create New Dish</button>
+               </div>
+
+            </div>
+
+            <div class="row">
+                <p class="light center">Invalid {{ output }}</p>
+            </div>
+         </form>
+      </div>
+        </div>
+    </main>
+</body>
+</html>

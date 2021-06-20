@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Details</title>
+
+         <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/home" class="brand-logo center">Waiter</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
+            </ul>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_a">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_b">{{navbar_data.right_b}}</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+<!-- Structure:
+        User Type
+
+        Username
+        Full Name
+        Email Address
+
+        Change password?
+        Date of Birth
+
+        DIVIDER
+
+        {Allergies
+        Orders Created}
+
+        {Dishes available
+        Rating Count}-->
+
+          <div class="container" style="margin-top: 2em;">
+              <h4 class="light grey-text text-darken-3 center">Account Details For Cook</h4>
+
+              <h6 class="light grey-text text-darken-1 center">Username: {{user.username}}</h6>
+              <h6 class="light grey-text text-darken-1 center">Full Name: {{user.first_name}} {{user.last_name}}</h6>
+              <h6 class="light grey-text text-darken-1 center">Email Address: {{user.email_address}}</h6>
+
+              <h6 class="light grey-text text-darken-1 center">Date of Birth: {{user.DoB}}</h6>
+
+              <div class="divider"></div>
+
+              <a href="{{ url_for('reroute_new_dish', navbar_data=navbar_data) }}"><button class="btn waves-effect amber darken-2 center">Create New Dish</button></a>
+
+          </div>
+    </main>
+
+        <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

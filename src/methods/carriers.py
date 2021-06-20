@@ -11,3 +11,13 @@ class navbar_data:
 
     def set_right_b(self, val):
         self.right_b = val
+
+    def populate_no_user(self):
+        self.set_left("Order")
+        self.set_right_a("Login")
+        self.set_right_b("Signup")
+
+    def populate_logged_in_user(self):
+        self.set_left("Order")
+        self.set_right_a("View Account")
+        self.set_right_b("Logout")

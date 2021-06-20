@@ -17,15 +17,36 @@
                 <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
             </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class="btn-small waves-effect amber darken-2" href="/login">{{navbar_data.right_a}}</a></li>
-                <li><a class="btn-small waves-effect amber darken-2" href="/signup">{{navbar_data.right_b}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_a">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_b">{{navbar_data.right_b}}</a></li>
             </ul>
         </div>
     </nav>
 
-     <div class="container" style="margin-top: 2em;">
+     <main>
+         <div class="container" style="margin-top: 2em;">
+            <h4 class="light grey-text text-darken-3 center">Sign Up for Waiter</h4>
 
-     </div>
+             <div class="row">
+                 <a href="{{ url_for('reroute_cook', navbar_data=navbar_data) }}" id="cook"><button class="amber white-text center btn-large waves-effect center-align">As a Cook</button></a>
+                <a href="{{ url_for('reroute_customer', navbar_data=navbar_data) }}" id="customer"><button class="amber white-text center btn-large waves-effect center-align">As a Customer</button></a>
+             </div>
+
+         </div>
+     </main>
+
+<!--     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
+<!--    <script type="text/javascript">-->
+<!--        $(function () {-->
+<!--            $("a#cook").on("click", function (e) {-->
+<!--                e.preventDefault()-->
+<!--                $.getJSON("/reroute_cook", function (data) {-->
+
+<!--                });-->
+<!--                return false;-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
 
 </body>
 </html>
