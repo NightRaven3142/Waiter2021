@@ -6,6 +6,7 @@ from src.accounts.flask_structures import *
 from src.methods.structures import *
 from src.accounts.validation import *
 import os
+from datetime import datetime
 
 UPLOAD_FOLDER = 'src/static/order_images'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', "JPG"}
@@ -37,7 +38,6 @@ def set_navbar():
         #
         # if session.get("waiter_current_user") is None:
         #     session["waiter_current_user"] = User(DB.get_username(u_name))
-
 
 def get_dishes():
     global current_dishes
@@ -72,7 +72,7 @@ def order():
 
     set_navbar()
 
-    return render_template("order.html", navbar_data=nav_data, dishes=current_dishes)
+    return render_template("order.html", navbar_data=nav_data, dishes=current_dishes, is_logged_in=get_is_logged_in_cookie())
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -82,30 +82,31 @@ def login():
     form = LoginForm()
     output = ""
 
-    if form.is_submitted():
-        username = form.username.data
-        password = form.password.data
+    if request.method == "POST":
+        if form.is_submitted():
+            username = form.username.data
+            password = form.password.data
 
-        if username == "" or username is None:
-            return render_template("login.html", navbar_data=nav_data, output=output)
+            if username == "" or username is None:
+                return render_template("login.html", navbar_data=nav_data, output=output)
 
-        user_info = User(DB.get_username(username))
+            user_info = User(DB.get_username(username))
 
-        if user_info.is_empty():
-            output = "Username not found"
-            return render_template("login.html", navbar_data=nav_data, output=output)
-        elif password != user_info.get_password_hash():
-            output = "Invalid password"
-            return render_template("login.html", navbar_data=nav_data, output=output)
+            if user_info.is_empty():
+                output = "Username not found"
+                return render_template("login.html", navbar_data=nav_data, output=output)
+            elif password != user_info.get_password_hash():
+                output = "Invalid password"
+                return render_template("login.html", navbar_data=nav_data, output=output)
+            else:
+                session["waiter_username_01A"] = username
+                set_is_logged_in_cookie(True)
+                set_current_user_id_cookie(user_info.get_user_id())
+
+                return redirect(url_for("account_details"))
         else:
-            session["waiter_username_01A"] = username
-            set_is_logged_in_cookie(True)
-            set_current_user_id_cookie(user_info.get_user_id())
-
-            return redirect(url_for("account_details"))
-    else:
-        output = "Login Failed"
-        return render_template("login.html", navbar_data=nav_data, output=output)
+            output = "Login Failed"
+            return render_template("login.html", navbar_data=nav_data, output=output)
 
     return render_template("login.html", navbar_data=nav_data, output=output)
 
@@ -136,6 +137,7 @@ def signup_cook():
             return render_template("signup_cook.html", navbar_data=nav_data, output=output, form=form)
 
         DB.insert_new_cook((cook_data[0], cook_data[1], cook_data[2], cook_data[-2], cook_data[4], cook_data[3]))
+        return redirect(url_for("login"))
 
     return render_template("signup_cook.html", navbar_data=nav_data, output=output, form=form)
 
@@ -160,6 +162,7 @@ def signup_customer():
             return render_template("signup_customer.html", navbar_data=nav_data, output=output, form=form)
 
         DB.insert_new_customer((customer_data[0], customer_data[1], customer_data[2], customer_data[-2], customer_data[4], customer_data[3]))
+        return redirect(url_for("login"))
 
     return render_template("signup_customer.html", navbar_data=nav_data, output=output, form=form)
 
@@ -173,16 +176,10 @@ def logout():
 
     return redirect(url_for("home"))
 
-@app.route("/purchase_confirm")
-def purchase_confirm():
-    global nav_data
-    set_navbar()
-
-    return render_template("purchase_confirm.html", navbar_data=nav_data, basket=session.get("waiter_basket", None))
-
 @app.route("/account_details")
 def account_details():
     global nav_data
+    global current_dishes
     set_navbar()
 
     if get_is_logged_in_cookie():
@@ -190,11 +187,20 @@ def account_details():
         if DB.is_user_in_cook_table(current_user_obj.get_user_id()):
             current_user_obj = Cook(current_user_obj.get_data_as_tuple(), current_user_obj.get_user_id())
             set_is_cook_cookie(True)
-            return render_template("account_details_cook.html", navbar_data=nav_data, user=current_user_obj)
+
+            dishes_by_current_cook = DB.find_dishes_from_cook(current_user_obj.get_user_id())
+            print(f"Dishes by cook {dishes_by_current_cook}")
+            dishes_as_obj = []
+            for d in dishes_by_current_cook:
+                print(f"Dish: {d}")
+                dishes_as_obj.append(current_dishes[d[0]-1])
+            return render_template("account_details_cook.html", navbar_data=nav_data, user=current_user_obj, dishes=dishes_as_obj)
         elif DB.is_user_in_customer_table(current_user_obj.get_user_id()):
             current_user_obj = Customer(current_user_obj.get_data_as_tuple(), current_user_obj.get_user_id())
             set_is_cook_cookie(False)
-            return render_template("account_details_customer.html", navbar_data=nav_data, user=current_user_obj)
+            orders = [Order(x) for x in DB.get_orders_from_customer(get_current_user_id_cookie())]
+
+            return render_template("account_details_customer.html", navbar_data=nav_data, user=current_user_obj, orders=orders)
     else:
         return redirect(url_for("home"))
 
@@ -221,15 +227,6 @@ def reroute_customer():
 
     return redirect(url_for("signup_customer"))
 
-# @app.route("/reroute_purchase")
-# def reroute_purchase():
-#     global nav_data
-#     set_navbar()
-#
-#     print("Reroute")
-#
-#     return redirect(url_for("purchase_confirm"))
-
 @app.route("/reroute_new_dish")
 def reroute_new_dish():
     global nav_data
@@ -242,14 +239,37 @@ def order_completed():
     global nav_data
     set_navbar()
 
-    return render_template("order_completed.html", navbar_data=nav_data)
+    if session.get("order_completed", None):
+        session["order_completed"] = False
+        return render_template("order_completed.html", navbar_data=nav_data)
+
+    return redirect(url_for("home"))
 
 @app.route("/complete_order")
 def complete_order():
     global nav_data
     set_navbar()
 
-    print("Purchased")
+    basket_indexes = session.get("waiter_basket", None)
+
+    if basket_indexes is None:
+        return redirect(url_for("purchase_confirm"))
+
+    current_date = datetime.now()
+    f = '%Y-%m-%d %H:%M:%S'
+    current_date = current_date.strftime(f)
+
+    DB.insert_new_order((get_current_user_id_cookie(), current_date))
+    o_id = DB.get_order_id(get_current_user_id_cookie(), current_date)[0][0]
+    print(f"Order ID is {o_id}")
+    print(f"Current user is {get_current_user_id_cookie()}")
+
+    for b in basket_indexes:
+        DB.insert_new_order_dish_relationship(b, o_id)
+
+    session["waiter_basket"] = None
+    session["order_to_complete"] = True
+
     return redirect(url_for("order_completed"))
 
 @app.route("/reroute_nav_a")
@@ -278,10 +298,28 @@ def add_dish_to_basket():
             session["waiter_basket"] = [x.dish_id for x in current_dishes if x.dish_id == int(dish_js_id)]
         else:
             print(f"Basket is {session['waiter_basket']}")
+            tmp_basket = session["waiter_basket"]
+            tmp_basket.append([x.dish_id for x in current_dishes if x.dish_id == int(dish_js_id)][0])
+            session["waiter_basket"] = tmp_basket
 
         print(f"Basket is {session.get('waiter_basket', None)}")
         return dish_js_id
 
+@app.route("/delete_dish_from_basket", methods=["GET", "POST"])
+def delete_dish_from_basket():
+    global current_dishes
+
+    basket = session.get("waiter_basket", None)
+
+    if request.method == "POST":
+        for b in basket:
+            if current_dishes[b-1].dish_id == int(request.form["d_id"]):
+                basket.remove(b)
+
+    session["waiter_basket"] = basket
+    print(f"Basket after assignment is {session.get('waiter_basket', None)}")
+
+    return redirect(url_for("purchase_confirm"))
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -318,9 +356,54 @@ def new_dish():
         print(f"Dish data is {dish_data}")
         DB.insert_new_dish(dish_data)
         get_dishes()
+        return redirect(url_for("account_details"))
 
     return render_template("new_dish.html", navbar_data=nav_data, output=output)
 
+@app.route("/delete_dish", methods=["GET", "POST"])
+def delete_dish():
+    if request.method == "POST":
+        print("Deleting dish")
+        DB.delete_dish_from_list(request.form["d_id"])
+        for d in current_dishes:
+            if d.dish_id == int(request.form["d_id"]):
+                current_dishes.remove(d)
+                break
+
+    return redirect(url_for("account_details"))
+
+@app.route("/open_order")
+def open_order():
+    global nav_data
+    set_navbar()
+
+    return render_template("view_order.html", navbar_data=nav_data)
+
+@app.route("/purchase_confirm", methods=["GET", "POST"])
+def purchase_confirm():
+    global nav_data
+    global current_dishes
+    set_navbar()
+
+    basket_index = session.get("waiter_basket", None)
+    basket_dishes = []
+
+    print(f"Basket index {basket_index}")
+
+    if basket_index != None:
+        if len(basket_index) > 0:
+            for b in basket_index:
+                basket_dishes.append(current_dishes[b-1])
+
+    print("Purchase confirm")
+
+    return render_template("purchase.html", navbar_data=nav_data, basket=basket_dishes)
+
+@app.route("/delete_customer")
+def delete_customer():
+    DB.delete_customer(get_current_user_id_cookie())
+
+    return redirect(url_for("logout"))
 
 if __name__ == '__main__':
     app.run()

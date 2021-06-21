@@ -52,6 +52,16 @@ class SQLDb:
             print(e)
         self.close_connection()
 
+    def __execute_delete_command(self, command, id):
+        self.connect()
+        try:
+            cur = self.__conn.cursor()
+            cur.execute(command, (id, ))
+            self.__conn.commit()
+        except Exception as e:
+            print(e)
+        self.close_connection()
+
     def __execute_select_command(self, command):
         self.connect()
         try:
@@ -119,18 +129,25 @@ class SQLDb:
         create_list_command = """ CREATE TABLE IF NOT EXISTS orders(
                                 order_id integer PRIMARY KEY,
                                 user_reference_id INTEGER NOT NULL,
-                                dish_reference_id INTEGER NOT NULL,
                                 
                                 time_ordered datetime NOT NULL,
-                                address text NOT NULL,
                                 
-                                FOREIGN KEY(user_reference_id) REFERENCES users(user_id),
-                                FOREIGN KEY(dish_reference_id) REFERENCES dishes(dish_id)
+                                FOREIGN KEY(user_reference_id) REFERENCES users(user_id)
                                 );
                               """
 
         self.__execute_command(create_list_command, False)
 
+    def __create_order_dish_table(self):
+        create_order_dish_command = """ CREATE TABLE IF NOT EXISTS order_dish_relationship(
+                                        dish_reference_id INTEGER NOT NULL,
+                                        order_reference_id INTEGER NOT NULL,
+                                        
+                                        FOREIGN KEY (dish_reference_id) REFERENCES dishes(dish_id),
+                                        FOREIGN KEY (order_reference_id) REFERENCES  orders(order_id),
+                                        PRIMARY KEY(dish_reference_id, order_reference_id)
+                                    );
+                                    """
 
     def insert_new_dish(self, dish):
         insert_dish_command = """ INSERT INTO dishes(name, cuisine, cooked_by, dish_description, image_name, price) VALUES (?, ?, ?, ?, ?, ?);"""
@@ -167,11 +184,14 @@ class SQLDb:
         self.__execute_insert_command(insert_command, (0, 0, 0, user_ref.get_user_id()))
 
     def insert_new_order(self, order):
-        insert_order_command = """INSERT INTO orders(user_reference_id, dish_reference_id, time_ordered, address) 
-        VALUES (?, ?, ?, ?);"""
+        insert_order_command = """INSERT INTO orders(user_reference_id, time_ordered) 
+        VALUES (?, ?);"""
 
         self.__execute_insert_command(insert_order_command, order)
 
+    def insert_new_order_dish_relationship(self, dish_id, order_id):
+        insert_relationship_command = """ INSERT INTO order_dish_relationship(dish_reference_id, order_reference_id) VALUES (?, ?);"""
+        self.__execute_insert_command(insert_relationship_command, (dish_id, order_id))
 
     def update_status(self, name, current_list, status):
         print(f"Task: {name} {status}")
@@ -194,7 +214,7 @@ class SQLDb:
     def delete_dish_from_list(self, dish_id):
         delete_dish_command = """DELETE FROM dishes WHERE dish_id = ?;""".format(id=dish_id)
 
-        self.__execute_insert_command(delete_dish_command, (dish_id,))
+        self.__execute_delete_command(delete_dish_command, (dish_id,))
 
     def get_customer_from_list(self, customer_id):
         select_tasks_command = """SELECT * FROM customers WHERE customer_id = {id};
@@ -218,10 +238,48 @@ class SQLDb:
         return self.__execute_select_command(select_lists_command)
 
     def is_user_in_cook_table(self, user_id):
-        select_cook_command = f"""SELECT user_reference_id FROM cooks WHERE user_reference_id= {user_id}"""
+        select_cook_command = f"""SELECT user_reference_id FROM cooks WHERE user_reference_id= {user_id};"""
         return True if len(self.__execute_select_command(select_cook_command)) > 0 else False
 
     def is_user_in_customer_table(self, user_id):
-        select_customer_command = f"""SELECT user_reference_id FROM customers WHERE user_reference_id= {user_id}"""
+        select_customer_command = f"""SELECT user_reference_id FROM customers WHERE user_reference_id= {user_id};"""
         return True if len(self.__execute_select_command(select_customer_command)) > 0 else False
+
+    def find_dishes_from_cook(self, cook_id):
+        select_dishes_command = f"""SELECT * FROM dishes WHERE cooked_by = {cook_id}; """
+        return self.__execute_select_command(select_dishes_command)
+
+    # def get_orders_from_cook(self, cook_id):
+    #     select_orders_command = f"""SELECT order_id FROM orders WHERE cook_reference_id = {cook_id}; """
+    #     return self.__execute_select_command(select_orders_command)
+    #
+    def get_orders_from_customer(self, user_id):
+        select_orders_command = f"""SELECT order_id, user_reference_id, time_ordered from orders WHERE user_reference_id = {user_id}"""
+        return self.__execute_select_command(select_orders_command)
+
+    def get_dishes_in_order(self, order_id):
+        select_dishes_command = f"""SELECT dishes.name, dishes.cuisine, dishes.dish_description, 
+                                    dishes.price FROM dishes, order_dish_relationship
+                                    WHERE order_dish_relationship.order_reference_id = {order_id} AND 
+                                    order_dish_relationship.dish_reference_id = dishes.dish_id;
+                                    """
+        return self.__execute_select_command(select_dishes_command)
+
+    def get_order_id(self, user_id, current_time):
+        select_order_command = f"""SELECT order_id FROM orders WHERE user_reference_id = {user_id} AND time_ordered = '{current_time}'; """
+        return self.__execute_select_command(select_order_command)
+
+    def delete_customer(self, user_id):
+        delete_command = f""" DELETE FROM users WHERE user_id = {user_id}; """
+        self.__execute_command(delete_command, True)
+
+        delete_customer_command = f""" DELETE FROM customers WHERE user_reference_id = {user_id}; """
+        self.__execute_command(delete_customer_command, True)
+
+    def delete_cook(self, user_id):
+        delete_command = f""" DELETE FROM users WHERE user_id = {user_id}; """
+        self.__execute_command(delete_command, True)
+
+        delete_cook_command = f""" DELETE FROM customers WHERE user_reference_id = {user_id}; """
+        self.__execute_command(delete_cook_command, True)
 

@@ -41,17 +41,17 @@ def validate_register_input(c_data):
 
     if not validate_name(c_data[0]):
         print("Name")
-        return (0, "First Name")
+        return (0, "Invalid First Name")
     if not validate_name(c_data[1]):
         print("Name 2")
-        return (0, "Last Name")
+        return (0, "Invalid Last Name")
 
     if not validate_email(c_data[2]):
         print("Email")
-        return (0, "Email")
+        return (0, "Invalid Email")
     if not validate_username(c_data[3]):
         print("Username")
-        return (0, "Username")
+        return (0, "Invalid Username")
     #
     # if c_data[-1] != c_data[-2]:
     #     print("Repeats")
@@ -61,17 +61,17 @@ def validate_register_input(c_data):
 
 def validate_dish_input(d_data):
     if not validate_name(d_data[0]):
-        return (0, "Name")
+        return (0, "Invalid Name")
     if not validate_name(d_data[1]):
-        return (0, "Cuisine")
+        return (0, "Invalid Cuisine")
 
     if not validate_dish_description(d_data[3]):
-        return (0, "Description")
+        return (0, "Invalid Description")
     if d_data[4] == "":
-        return (0, "Filenmae")
+        return (0, "Invalid Filenmae")
     if not validate_price(d_data[-1]):
         print(f"Price is {d_data[-1]}")
-        return (0, "Price")
+        return (0, "Invalid Price")
 
     return (1, None)
 
@@ -87,5 +87,5 @@ def validate_price(price):
     except Exception as e:
         return False
 
-    return int(price * 100)
+    return round(int(price * 100), 2)
 

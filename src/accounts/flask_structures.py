@@ -24,6 +24,7 @@ class RegisterForm(FlaskForm):
 
     submit = SubmitField("signup")
 
+
 class DishForm(FlaskForm):
     dish_name = StringField("dish_name")
     dish_cuisine = StringField("dish_cuisine")

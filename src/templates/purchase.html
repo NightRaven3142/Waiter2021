@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Confirm</title>
+
+         <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+        function delete_dish(dish_id) {
+            $.post("/delete_dish_from_basket", {
+               d_id : dish_id
+            });
+            location.reload();
+        }
+    </script>
+
+
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/home" class="brand-logo center">Waiter</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
+            </ul>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_a">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_b">{{navbar_data.right_b}}</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container" style="margin-top: 1em;">
+            <div class="row center">
+                <a href="/complete_order" id="complete_order_button"><button class="btn-large waves-effect amber darken-2">Complete Order</button></a>
+            </div>
+
+           <table class="centered">
+                    <thead>
+                      <tr>
+                          <th>Dish Name</th>
+                          <th>Cuisine</th>
+                          <th>Description</th>
+                          <th>Price</th>
+                          <th>Action</th>
+                      </tr>
+                    </thead>
+
+            {% for dish in basket %}
+
+             <tr>
+                <td>{{dish.name}}</td>
+                <td>{{dish.cuisine}}</td>
+                 <td>{{dish.description}}</td>
+                 <td>£{{dish.price}}</td>
+                <td><button class="btn red" onclick="delete_dish('{{dish.dish_id}}')">Delete</button></td>
+              </tr>
+
+            {% endfor %}
+
+           </table>
+        </div>
+    </main>
+</body>
+</html>

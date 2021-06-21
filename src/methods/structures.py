@@ -17,6 +17,7 @@ class User:
         self.email_address = None
         self.password_hash = None
         self.DoB = None
+        self.username = None
 
         if len(data) == 0:
             return
@@ -33,6 +34,7 @@ class User:
         self.email_address = data[3]
         self.password_hash = data[4]
         self.DoB = data[5]
+        self.username = data[6]
 
     def set_first_name(self, name):
         self.first_name = name
@@ -88,20 +90,16 @@ class Customer(User):
 
 class Order:
     def __init__(self, data):
-        self.__order_id = None
+        self.order_id = None
         self.__user_reference_id = None
-        self.__dish_reference_id = None
-        self.__time_ordered = None
-        self.__address = None
+        self.time_ordered = None
 
         self.set_order_defaults(data)
 
     def set_order_defaults(self, data):
-        self.__order_id = data[0]
+        self.order_id = data[0]
         self.__user_reference_id = data[1]
-        self.__dish_reference_id = data[2]
-        self.__time_ordered = data[3]
-        self.__address = data[4]
+        self.time_ordered = data[2]
 
 
 class Dish:

@@ -42,7 +42,33 @@
           <div class="container" style="margin-top: 2em;">
               <h4 class="light grey-text text-darken-3 center">Account Details For Customer</h4>
 
-              <h6 class="light grey-text text-darken-1 center">User Type</h6>
+            <h6 class="light grey-text text-darken-1 center">Username: {{user.username}}</h6>
+              <h6 class="light grey-text text-darken-1 center">Full Name: {{user.first_name}} {{user.last_name}}</h6>
+              <h6 class="light grey-text text-darken-1 center">Email Address: {{user.email_address}}</h6>
+
+            <div class="divider"></div>
+
+           <table class="centered striped">
+                    <thead>
+                      <tr>
+                          <th>Order Id</th>
+                          <th>Time Ordered</th>
+                      </tr>
+                    </thead>
+
+                   {% for order in orders %}
+                      <tr>
+                        <td>{{order.order_id}}</td>
+                        <td>{{order.time_ordered}}</td>
+                      </tr>
+                    {% endfor %}
+           </table>
+
+            <div class="divider"></div>
+
+              <div class="row center" style="margin-top: 1em;">
+                    <a href="/delete_customer"><button class="btn-large red">Delete User Account</button> </a>
+              </div>
           </div>
     </main>
 

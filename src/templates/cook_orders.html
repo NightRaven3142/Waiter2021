@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <title>Cook Orders</title>
+
+         <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="/home" class="brand-logo center">Waiter</a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
+            </ul>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_a">{{navbar_data.right_a}}</a></li>
+                <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_b">{{navbar_data.right_b}}</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>
+            function open_order(order_id) {
+                $.post("/open_order", {
+                   o_id : order_id
+                });
+            }
+        </script>
+
+        <div class="container">
+            <h4 class="light grey-text text-darken-3 center">Cook's Orders</h4>
+
+           <table class="centered striped">
+                <thead>
+                  <tr>
+                      <th>Order Id</th>
+                      <th>Time Ordered</th>
+                  </tr>
+                </thead>
+
+               {% for order in orders %}
+                  <tr>
+                    <td><a onclick="open_order('{{order.order_id}}')">{{order.order_id}}</a></td>
+                    <td>{{order.time_ordered}}</td>
+                  </tr>
+               {% endfor %}
+           </table>
+        </div>
+
+    </main>
+</body>
+</html>

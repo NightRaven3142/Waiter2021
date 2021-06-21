@@ -13,6 +13,12 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type=text/javascript>
         function add_to_basket(dish_id) {
+            if ("{{is_logged_in}}" != "True") {
+                M.toast({html: "Please log in to order dishes"});
+                return;
+            }
+
+            console.debug(dish_id)
             $.post("/add_dish_to_basket", {
                d_id : dish_id
             });
@@ -27,6 +33,7 @@
                 <li><a class="btn-small waves-effect amber darken-2" href="/order">{{navbar_data.left}}</a></li>
             </ul>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="{{ url_for('purchase_confirm') }}"><button class="green darken-1 white-text center btn waves-effect">Go To Basket</button></a></li>
                 <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_a">{{navbar_data.right_a}}</a></li>
                 <li><a class="btn-small waves-effect amber darken-2" href="/reroute_nav_b">{{navbar_data.right_b}}</a></li>
             </ul>
@@ -35,62 +42,54 @@
 
     <main>
         <div class="container">
+                <div class="row">
+<!--                    <form class="col s12">-->
+<!--                        <div class="row">-->
+<!--                            <div class="input-field col s9">-->
+<!--                                <i class="material-icons prefix">search</i>-->
+<!--                                <input type="text" placeholder="Find Dishes" id="autocomplete-input" class="autocomplete amber-text">-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </form>-->
+                        <h4 class="light text-darken-3 center">Order your dishes</h4>
+                </div>
+
             <div class="row">
-                <form class="col s12">
-                    <div class="row">
-                        <div class="input-field col s9">
-                            <i class="material-icons prefix">search</i>
-                            <input type="text" placeholder="Find Dishes" id="autocomplete-input" class="autocomplete amber-text">
+                {% for dish in dishes %}
+                <div class="col s3">
+                    <div class="card sticky-action small">
+                        <div class="card-image waves-effect waves-block waves-light">
+                            <img class="activator" src="static/order_images/{{ dish.image_name }}">
                         </div>
-                        <div class="col s3">
-                            <a href="/reroute_purchase_confirm" id="purchase_button"><button class="amber white-text center btn-large waves-effect">Purchase Dishes</button></a>
+                        <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-3">{{dish.name}} (£{{dish.price}})<i class="material-icons right">more_vert</i></span>
                         </div>
-                    </div>
-                </form>
-            </div>
-
-        </div>
-
-        {% for dish in dishes %}
-        <div class="row">
-            <div class="col s3">
-                
-            </div>
-            <div class="col s9">
-            <div class="col s3 m3">
-                <div class="card sticky-action small">
-                    <div class="card-image waves-effect waves-block waves-light">
-                        <img class="activator" src="static/order_images/{{ dish.image_name }}">
-                    </div>
-                    <div class="card-content">
-                        <span class="card-title activator grey-text text-darken-3">{{dish.name}}<i class="material-icons right">more_vert</i></span>
-                    </div>
-                    <div class="card-action">
-                        <a class="modal-trigger" href="#modal1">Order now</a>
-                    </div>
-                    <div class="card-reveal">
-                      <span class="card-title grey-text text-darken-4">{{dish.name}}<i class="material-icons right">close</i></span>
-                      <p>{{dish.description}}</p>
-                    </div>
-
-                    <div id="modal1" class="modal modal-fixed-footer">
-                        <div class="modal-content">
-                            <h4>{{dish.name}}</h4>
-                            <h6>{{dish.price}}</h6>
-                            <img src="static/order_images/{{ dish.image_name }}" class="responsive-img">
-                            <p>{{dish.description}}</p>
+                        <div class="card-action">
+                            <a class="modal-trigger" href="#modal{{dish.dish_id}}">Order now</a>
                         </div>
-                        <div class="modal-footer">
-                            <a class="modal-close waves-effect waves-orange btn-flat" id="order_new_dish" onclick="add_to_basket('{{dish.dish_id}}')">Add to Basket</a>
+                        <div class="card-reveal">
+                          <span class="card-title grey-text text-darken-4">{{dish.name}}<i class="material-icons right">close</i></span>
+                          <p>{{dish.description}}</p>
+                        </div>
+
+                        <div id="modal{{dish.dish_id}}" class="modal modal-fixed-footer">
+                            <div class="modal-content">
+                                <h4>{{dish.name}}</h4>
+                                <h6 class="grey-text darken-4">Price: £{{dish.price}}</h6>
+                                <img src="static/order_images/{{ dish.image_name }}" class="responsive-img">
+                                <h6>{{dish.description}}</h6>
+                            </div>
+                            <div class="modal-footer">
+                                <a class="modal-close waves-effect waves-orange btn-flat" onclick="add_to_basket('{{dish.dish_id}}')">Add to Basket</a>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {% endfor %}
             </div>
 
-            </div>
         </div>
-
-        {% endfor %}
 
     </main>
 
